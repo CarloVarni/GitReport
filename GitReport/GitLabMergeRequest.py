@@ -16,7 +16,8 @@ class gitlab_merge_request(git_merge_request):
         super().__init__(id=id,
                          web_url = merge_request_info['web_url'],
                          state = merge_request_info['state'],
-                         title =  merge_request_info['title'],
+                         draft = merge_request_info['draft'],
+                         title = merge_request_info['title'],
                          description = merge_request_info['description'],
                          author = git_user(merge_request_info['author']['username'],
                                            merge_request_info['author']['web_url']),
@@ -26,16 +27,11 @@ class gitlab_merge_request(git_merge_request):
                          merged_at = None if merge_request_info['state'] == "opened" else time_format(merge_request_info['merged_at']))
         
         self.__info: dict = merge_request_info
-        self.__draft: bool = merge_request_info['draft']
         self.__acts_tag_change: tuple = self.check_changes(merge_request_diff)
 
     @property
     def acts_tag_change(self) -> tuple:
         return self.__acts_tag_change
-
-    @property
-    def draft(self) -> bool:
-        return self.__draft
     
     def changes_acts_tag(self) -> bool:
         return len(self.__acts_tag_change) != 0

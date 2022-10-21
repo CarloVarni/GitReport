@@ -12,8 +12,9 @@ class github_pull_request(git_merge_request):
 
         super().__init__(id=id,
                          web_url = merge_request_info['html_url'],
-                         state =  merge_request_info['state'],
-                         title =  merge_request_info['title'],
+                         state = merge_request_info['state'],
+                         draft = merge_request_info['draft'],
+                         title = merge_request_info['title'],
                          description = merge_request_info['body'],
                          author = git_user(merge_request_info['user']['login'],
                                            merge_request_info['user']['html_url']),

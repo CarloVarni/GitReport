@@ -6,6 +6,7 @@ class git_merge_request:
                  id: int,
                  web_url: str,
                  state: str,
+                 draft: bool,
                  title: str,
                  description: str,
                  author: git_user,
@@ -31,7 +32,8 @@ class git_merge_request:
         self.__merged_by: git_user = merged_by
         self.__created_at: time_format = created_at
         self.__merged_at: time_format = merged_at
-
+        self.__draft: bool = draft
+        
     def __str__(self) -> str:
         pass
     
@@ -75,6 +77,10 @@ class git_merge_request:
     def merged_at(self) -> time_format:
         return self.__merged_at
 
+    @property
+    def draft(self) -> bool:
+        return self.__draft
+    
     def dump_latex(self) -> str:
         pass    
 
