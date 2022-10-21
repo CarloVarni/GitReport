@@ -8,13 +8,48 @@ from GitReport.BeamerWriter import beamer_writer
 from GitReport.GitHubManager import github_manager
 from GitReport.GitLabManager import gitlab_manager
 
-from datetime import datetime
+import argparse
 import re
-
 import os
 from dotenv import load_dotenv
-    
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('--author', required=True, type=str, nargs=1,
+                        help='Author of the Git Report document')
+    parser.add_argument('--date', required=True, type=str, nargs=1, 
+                        help='Date of the report')
+    parser.add_argument('--title', required=False, type=str, nargs=1, default="Acts-Athena integration, MRs report",
+                        help='Title of the presentation')
+    parser.add_argument('--gitlab_repository', required=False, type=str, nargs=1, default="https://gitlab.cern.ch",
+                        help='Gitlab repository')
+    parser.add_argument('--gitlab_project_id', required=False, type=int, nargs=1, default=53790,
+                        help='Gitlab projects id')
+    parser.add_argument('--github_repository', required=False, type=str, nargs=1, default="acts-project/acts",
+                        help='Github repository')
+    parser.add_argument('--output_file', required=True, type=str, nargs=1,
+                        help='Name of the output latex file')
+    parser.add_argument('--from_date', required=True, type=str, nargs=1,
+                        help='Get gitlab merge requests from given date')
+    parser.add_argument('--to_date', required=True, type=str, nargs=1,
+                        help='Get gitlab merge requests up to given date')
+
+    args = parser.parse_args()
+    return args
+
 def main():
+    args = parse_arguments()
+    
+    gitlab_repository_name = args.gitlab_repository if type(args.gitlab_repository) == str else args.gitlab_repository[0]
+    gitlab_project_id = args.gitlab_project_id
+    github_repository_name = args.github_repository if type(args.github_repository) == str else args.github_repository[0]
+    output_file = args.output_file if type(args.output_file) == str else args.output_file[0]
+    author = args.author if type(args.author) == str else args.author[0]
+    title = args.title if type(args.title) == str else args.title[0]
+    date = args.date if type(args.date) == str else args.date[0]
+    date_from = args.from_date if type(args.from_date) == str else args.from_date[0]
+    date_to = args.to_date if type(args.to_date) == str else args.to_date[0]
+
     gitlab_token = ""
     github_token = ""
 
@@ -28,16 +63,13 @@ def main():
         
     # Athena
     gl_manager = gitlab_manager(gitlab_token=gitlab_token,
-                                repository="https://gitlab.cern.ch",
-                                project_id=53790)
-
-    before_time = datetime.today()
-    after_time = datetime(2022, 10, 8)
+                                repository=gitlab_repository_name,
+                                project_id=gitlab_project_id)
 
     list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
                                                             labels='ACTS,master',
-                                                            created_after=after_time.isoformat(),
-                                                            created_before=before_time.isoformat(),
+                                                            created_after=date_from,
+                                                            created_before=date_to,
                                                             iterator=True)
     print(f"Found {len(list_merged_mrs_summary)} merged MRs in this period with an ACTS label ...")
 
@@ -47,13 +79,13 @@ def main():
     print('acts_tag_changes:', acts_tag_changes)
 
 
-    bwriter = beamer_writer("Report-Acts-Athena.tex",
-                            title="Acts-Athena integration, MRs report",
-                            author="carlo.varni",
-                            date="21 October 2022")
+    bwriter = beamer_writer(output_file,
+                            title=title,
+                            author=author,
+                            date=date)
 
     bwriter.add_data_group(title="Merged MRs with ACTS targeting master",
-                           subtitle=f"Period: {after_time.isoformat()} -- {before_time.isoformat()}",
+                           subtitle=f"Period: {date_to} -- {date_from}",
                            collection=list_merged_mrs_summary)
 
 
@@ -70,11 +102,11 @@ def main():
             list_open_mrs_summary.append(mr)
             
     bwriter.add_data_group(title="Open MRs with ACTS targeting master",
-                           subtitle=f"Period: {after_time.isoformat()} -- {before_time.isoformat()}",
+                           subtitle=f"Period: {date_to} -- {date_from}",
                            collection=list_open_mrs_summary)
 
     bwriter.add_data_group(title="Draft MRs with ACTS targeting master",
-                           subtitle=f"Period: {after_time.isoformat()} -- {before_time.isoformat()}",
+                           subtitle=f"Period: {date_to} -- {date_from}",
                            collection=list_draft_mrs_summary)
 
     
