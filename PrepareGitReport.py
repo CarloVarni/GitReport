@@ -97,7 +97,7 @@ def main():
     list_draft_mrs_summary = []
 
     for mr in open_with_label:
-        if "Draft:" in mr.title:
+        if mr.draft:
             list_draft_mrs_summary.append(mr)
         else:
             list_open_mrs_summary.append(mr)
