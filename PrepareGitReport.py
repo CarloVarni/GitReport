@@ -84,6 +84,7 @@ def main():
                             author=author,
                             date=date)
 
+    
     bwriter.add_data_group(title="Merged MRs with ACTS targeting master",
                            subtitle=f"Period: {date_to} -- {date_from}",
                            collection=list_merged_mrs_summary)

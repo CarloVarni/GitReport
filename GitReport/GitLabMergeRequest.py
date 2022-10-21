@@ -36,15 +36,15 @@ class gitlab_merge_request(git_merge_request):
         return len(self.__acts_tag_change) != 0
         
     def __str__(self):
-        message = f"Merge Request [id: {self.__id}]\n"
-        message += f"   * web url: {self.__web_url}\n"
-        message += f"   * state: {self.__state}\n"
-        message += f"   * created at: {self.__created_at}\n"
-        message += f"   * author: {self.__author}\n"
-        message += f"   * merged by: {self.__merged_by}\n"
-        message += f"   * merged at: {self.__merged_at}\n" 
-        message += f"   * title: {self.__title}\n"
-        message += f"   * description: \n{self.__description}\n"
+        message = f"Merge Request [id: {self.id}]\n"
+        message += f"   * web url: {self.web_url}\n"
+        message += f"   * state: {self.state}\n"
+        message += f"   * created at: {self.created_at}\n"
+        message += f"   * author: {self.author}\n"
+        message += f"   * merged by: {self.merged_by}\n"
+        message += f"   * merged at: {self.merged_at}\n" 
+        message += f"   * title: {self.title}\n"
+        message += f"   * description: \n{self.description}\n"
         return message
 
     def dump_latex(self):

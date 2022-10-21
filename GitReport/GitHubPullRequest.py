@@ -25,11 +25,11 @@ class github_pull_request(git_merge_request):
         self.__info: dict = merge_request_info
         
     def __str__(self) -> str:
-        message = f"Pull Request [id: {self.__id}]\n"
-        message += f"   * web url: {self.__web_url}\n"
-        message += f"   * author: {self.__author}\n"
-        message += f"   * title: {self.__title}\n"
-        message += f"   * description: \n{self.__description}\n"
+        message = f"Pull Request [id: {self.id}]\n"
+        message += f"   * web url: {self.web_url}\n"
+        message += f"   * author: {self.author}\n"
+        message += f"   * title: {self.title}\n"
+        message += f"   * description: \n{self.description}\n"
         return message
     
     def dump_latex(self):
