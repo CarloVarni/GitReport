@@ -1,6 +1,6 @@
-from GitMergeRequest import git_merge_request    
-from TimeFormat import time_format
-from GitUser import git_user
+from GitReport.GitMergeRequest import git_merge_request    
+from GitReport.TimeFormat import time_format
+from GitReport.GitUser import git_user
 import re
 
 class gitlab_merge_request(git_merge_request):
@@ -20,10 +20,10 @@ class gitlab_merge_request(git_merge_request):
                          description = merge_request_info['description'],
                          author = git_user(merge_request_info['author']['username'],
                                            merge_request_info['author']['web_url']),
-                         merged_by = git_user(merge_request_info['merged_by']['username'] ,
-                                              merge_request_info['merged_by']['web_url']),
+                         merged_by = None if merge_request_info['state'] == "opened" else git_user(merge_request_info['merged_by']['username'] ,
+                                                                                                   merge_request_info['merged_by']['web_url']),
                          created_at = time_format(merge_request_info['created_at']),
-                         merged_at = time_format(merge_request_info['merged_at']))
+                         merged_at = None if merge_request_info['state'] == "opened" else time_format(merge_request_info['merged_at']))
         
         self.__info: dict = merge_request_info
         self.__acts_tag_change: tuple = self.check_changes(merge_request_diff)
@@ -51,7 +51,8 @@ class gitlab_merge_request(git_merge_request):
         message = f"\\textbf{{{self.title}}} [\\href{{{self.web_url}}}{{MR !{self.id}}}]\n\n"
         message += "{\scriptsize\n"
         message += f"created by \\href{{{self.author.web_url}}}{{@{self.author.username}}} [{self.created_at}]\n\n"
-        message += f"merged by \\href{{{self.merged_by.web_url}}}{{@{self.merged_by.username}}} [{self.merged_at}]\n"
+        if self.state == "merged":
+            message += f"merged by \\href{{{self.merged_by.web_url}}}{{@{self.merged_by.username}}} [{self.merged_at}]\n"
         message += "}\n\n"
         return message
 

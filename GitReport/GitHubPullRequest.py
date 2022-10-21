@@ -1,6 +1,6 @@
-from GitMergeRequest import git_merge_request
-from TimeFormat import time_format
-from GitUser import git_user
+from GitReport.GitMergeRequest import git_merge_request
+from GitReport.TimeFormat import time_format
+from GitReport.GitUser import git_user
 
 class github_pull_request(git_merge_request):
     def __init__(self,

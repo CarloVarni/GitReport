@@ -1,5 +1,5 @@
-from TimeFormat import time_format
-from GitUser import git_user
+from GitReport.TimeFormat import time_format
+from GitReport.GitUser import git_user
 
 class git_merge_request:
     def __init__(self,

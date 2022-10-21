@@ -1,47 +1,19 @@
 from gitlab import Gitlab
 from github import Github
 
-from GitHubPullRequest import github_pull_request
-from GitLabMergeRequest import gitlab_merge_request
-from BeamerWriter import beamer_writer
+from GitReport.GitHubPullRequest import github_pull_request
+from GitReport.GitLabMergeRequest import gitlab_merge_request
+from GitReport.BeamerWriter import beamer_writer
+
+from GitReport.GitHubManager import github_manager
+from GitReport.GitLabManager import gitlab_manager
 
 from datetime import datetime
 import re
 
 import os
 from dotenv import load_dotenv
-
-def get_relevant_releases(acts_tag_changes,
-                          releases) -> tuple:
-    list_relevant_releases = []
-    for release in releases:
-        tag_name = release.tag_name
-        if (tag_name > acts_tag_changes[len(acts_tag_changes) - 1]):
-            continue
-        if (tag_name <= acts_tag_changes[0]):
-            continue
-        list_relevant_releases.append( (tag_name, release.body))
-    return list_relevant_releases
     
-def get_list_prs_for_release(tag_name: str,
-                             release_body: str,
-                             repo) -> tuple:
-    body = release_body.split('\n')
-    ids = []
-    for el in body:
-        match = re.findall("\(#(\\d+)\)", el)
-        if len(match) != 1:
-            continue
-        ids.append(int(match[0]))
-
-    list_prs = []
-    for id in ids:
-        pr = repo.get_pull(id).raw_data
-        merge_request = github_pull_request(id, pr)
-        list_prs.append(merge_request)
-    return list_prs
-
-
 def main():
     gitlab_token = ""
     github_token = ""
@@ -55,36 +27,27 @@ def main():
         quit()
         
     # Athena
-    Gitlab_repo = "https://gitlab.cern.ch"
-    gl = Gitlab(Gitlab_repo, private_token=gitlab_token)
-    athena_project = gl.projects.get(53790)
+    gl_manager = gitlab_manager(gitlab_token=gitlab_token,
+                                repository="https://gitlab.cern.ch",
+                                project_id=53790)
 
     before_time = datetime.today()
     after_time = datetime(2022, 10, 8)
 
-    merged_with_label = athena_project.mergerequests.list(state='merged',
-                                                          labels='ACTS,master',
-                                                          created_after=after_time.isoformat(),
-                                                          created_before=before_time.isoformat(),
-                                                          iterator=True)
-    print(f"Found {len(merged_with_label)} merged MRs in this period with an ACTS label ...")
+    list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
+                                                            labels='ACTS,master',
+                                                            created_after=after_time.isoformat(),
+                                                            created_before=before_time.isoformat(),
+                                                            iterator=True)
+    print(f"Found {len(list_merged_mrs_summary)} merged MRs in this period with an ACTS label ...")
 
-    acts_tag_is_changed = False
-    acts_tag_changes = []
-    
-    list_merged_mrs_summary = []
-    for mr in merged_with_label:
-        id = mr.attributes['iid']
-        merge_request = gitlab_merge_request(id,
-                                             mr.attributes,
-                                             mr.changes())
-        list_merged_mrs_summary.append(merge_request)
+    acts_tag_is_changed = gl_manager.changes_acts_tag
+    acts_tag_changes = gl_manager.acts_tag_changes
+    print('acts_tag_is_changed:', acts_tag_is_changed)
+    print('acts_tag_changes:', acts_tag_changes)
 
-        if merge_request.changes_acts_tag():
-            acts_tag_is_changed = True
-            acts_tag_changes += merge_request.acts_tag_change
-        
-    bwriter = beamer_writer("Report-Acts-Athena.tek",
+
+    bwriter = beamer_writer("Report-Acts-Athena.tex",
                             title="Acts-Athena integration, MRs report",
                             author="carlo.varni",
                             date="21 October 2022")
@@ -93,26 +56,44 @@ def main():
                            subtitle=f"Period: {after_time.isoformat()} -- {before_time.isoformat()}",
                            collection=list_merged_mrs_summary)
 
-    acts_tag_changes = sorted(acts_tag_changes)
-    print('acts_tag_is_changed:', acts_tag_is_changed)
-    print('acts_tag_changes:', acts_tag_changes)
+
+    open_with_label = gl_manager.get_merge_requests(state='opened',
+                                                    labels='ACTS,master',
+                                                    iterator=True)
+    list_open_mrs_summary = []
+    list_draft_mrs_summary = []
+
+    for mr in open_with_label:
+        if "Draft:" in mr.title:
+            list_draft_mrs_summary.append(mr)
+        else:
+            list_open_mrs_summary.append(mr)
+            
+    bwriter.add_data_group(title="Open MRs with ACTS targeting master",
+                           subtitle=f"Period: {after_time.isoformat()} -- {before_time.isoformat()}",
+                           collection=list_open_mrs_summary)
+
+    bwriter.add_data_group(title="Draft MRs with ACTS targeting master",
+                           subtitle=f"Period: {after_time.isoformat()} -- {before_time.isoformat()}",
+                           collection=list_draft_mrs_summary)
+
+    
 
 
     if acts_tag_is_changed:
         # Github
-        gh = Github(github_token)
-        repo = gh.get_repo("acts-project/acts")
+        gh_manager = github_manager(github_token=github_token,
+                                    repository="acts-project/acts")
 
-        list_relevant_tags = get_relevant_releases(acts_tag_changes,
-                                                   repo.get_releases())
-        list_relevant_tags = sorted(list_relevant_tags,
-                                    key=lambda x: x[0],
-                                    reverse=False)        
+        list_relevant_tags = gh_manager.get_relevant_releases(from_release=acts_tag_changes[0],
+                                                              to_release=acts_tag_changes[len(acts_tag_changes)-1])
+
         print(f"List of relevant Acts tags interested: {[tag_name for (tag_name, release) in list_relevant_tags]}")
 
         for (tag_name, release) in list_relevant_tags:
             print(f"   * Getting PRs from Tag {tag_name}")
-            list_prs = get_list_prs_for_release(tag_name, release, repo)
+            list_prs = gh_manager.get_list_prs_for_release(tag_name=tag_name,
+                                                           release_body=release)
 
             bwriter.add_data_group(title=f"Acts Tag {tag_name} in Athena",
                                    subtitle=f"PRs introduced with Tag {tag_name}",
@@ -124,3 +105,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
