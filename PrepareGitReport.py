@@ -33,7 +33,9 @@ def parse_arguments():
                         help='Get gitlab merge requests from given date')
     parser.add_argument('--to_date', required=True, type=str, nargs=1,
                         help='Get gitlab merge requests up to given date')
-
+    parser.add_argument('--branch', required=False, type=str, nargs=1, default='master',
+                        help='List of branches')
+    
     args = parser.parse_args()
     return args
 
@@ -49,6 +51,7 @@ def main():
     date = args.date if type(args.date) == str else args.date[0]
     date_from = args.from_date if type(args.from_date) == str else args.from_date[0]
     date_to = args.to_date if type(args.to_date) == str else args.to_date[0]
+    branches = args.branch.split(',') if type(args.branch) == str else args.branch[0].split(',')
 
     gitlab_token = ""
     github_token = ""
@@ -61,58 +64,47 @@ def main():
         print('Env variables are not properly set! Check the .env file is present and/or the env variables are set.')
         quit()
         
-    # Athena
+    # Gitlab
     gl_manager = gitlab_manager(gitlab_token=gitlab_token,
                                 repository=gitlab_repository_name,
                                 project_id=gitlab_project_id)
-
-    list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
-                                                            labels='ACTS,master',
-                                                            created_after=date_from,
-                                                            created_before=date_to,
-                                                            iterator=True)
-    print(f"Found {len(list_merged_mrs_summary)} merged MRs in this period with an ACTS label ...")
-
-    acts_tag_is_changed = gl_manager.changes_acts_tag
-    acts_tag_changes = gl_manager.acts_tag_changes
-    print('acts_tag_is_changed:', acts_tag_is_changed)
-    print('acts_tag_changes:', acts_tag_changes)
-
 
     bwriter = beamer_writer(output_file,
                             title=title,
                             author=author,
                             date=date)
 
+    for branch in branches:
+        print(f"Retrieving  MRs in this period with labels: ACTS and {branch} ...")
+        list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
+                                                                labels=f'ACTS,{branch}',
+                                                                created_after=date_from,
+                                                                created_before=date_to,
+                                                                iterator=True)
+        print(f"   * Found {len(list_merged_mrs_summary)} merged MRs")
+        
+        bwriter.add_data_group(title=f"Merged MRs with ACTS targeting {branch}",
+                               subtitle=f"Period: {date_from} -- {date_to}",
+                               collection=[el for el in list_merged_mrs_summary])
+
+        open_with_label = gl_manager.get_merge_requests(state='opened',
+                                                        labels=f'ACTS,{branch}',
+                                                        iterator=True)
+        print(f"   * Found {len(list_merged_mrs_summary)} opened/draft MRs")
+                
+        bwriter.add_data_group(title=f"Open MRs with ACTS targeting {branch}",
+                               subtitle=f"Period: {date_from} -- {date_to}",
+                               collection=[el for el in open_with_label if not el.draft])
+
+        bwriter.add_data_group(title=f"Draft MRs with ACTS targeting {branch}",
+                               subtitle=f"Period: {date_from} -- {date_to}",
+                               collection=[el for el in open_with_label if el.draft])
+
+    acts_tag_is_changed = gl_manager.changes_acts_tag
+    acts_tag_changes = gl_manager.acts_tag_changes
+    print('acts_tag_is_changed:', acts_tag_is_changed)
+    print('acts_tag_changes:', acts_tag_changes)
     
-    bwriter.add_data_group(title="Merged MRs with ACTS targeting master",
-                           subtitle=f"Period: {date_to} -- {date_from}",
-                           collection=list_merged_mrs_summary)
-
-
-    open_with_label = gl_manager.get_merge_requests(state='opened',
-                                                    labels='ACTS,master',
-                                                    iterator=True)
-    list_open_mrs_summary = []
-    list_draft_mrs_summary = []
-
-    for mr in open_with_label:
-        if mr.draft:
-            list_draft_mrs_summary.append(mr)
-        else:
-            list_open_mrs_summary.append(mr)
-            
-    bwriter.add_data_group(title="Open MRs with ACTS targeting master",
-                           subtitle=f"Period: {date_to} -- {date_from}",
-                           collection=list_open_mrs_summary)
-
-    bwriter.add_data_group(title="Draft MRs with ACTS targeting master",
-                           subtitle=f"Period: {date_to} -- {date_from}",
-                           collection=list_draft_mrs_summary)
-
-    
-
-
     if acts_tag_is_changed:
         # Github
         gh_manager = github_manager(github_token=github_token,
@@ -130,7 +122,8 @@ def main():
 
             bwriter.add_data_group(title=f"Acts Tag {tag_name} in Athena",
                                    subtitle=f"PRs introduced with Tag {tag_name}",
-                                   collection=list_prs)
+                                   collection=list_prs,
+                                   section_page=True)
 
     bwriter.write()
     

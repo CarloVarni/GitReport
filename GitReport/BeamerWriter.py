@@ -33,15 +33,18 @@ class beamer_writer:
                        title: str,
                        subtitle: str,
                        collection: tuple,
-                       n: int = 7):
-        self.__data_group.append([title, subtitle, collection, n])
-    
+                       n: int = 7,
+                       section_page: bool = False):
+        self.__data_group.append([title, subtitle, collection, n, section_page])
+
     def write(self) -> None:
         with open(self.file_name, "w") as outFile:
             self.write_metadata(outFile)
             self.write_begin_document(outFile)
 
-            for (title, subtitle, collection, n) in self.__data_group:
+            for (title, subtitle, collection, n, section_page) in self.__data_group:
+                if section_page:
+                    self.write_title_page(title, outFile)
                 self.write_collection(title, subtitle, collection, n, outFile)
             
             self.write_end_document(outFile)
@@ -77,9 +80,16 @@ class beamer_writer:
         
     def write_begin_document(self,
                              outFile) -> None:
-        outFile.write("\\begin{document}\n\n")
+        outFile.write("\\begin{document}\n\n"),
         outFile.write("\\frame{\\titlepage}\n\n")
 
+    def write_title_page(self,
+                         title: str,
+                         outFile) -> None:
+        outFile.write("\\begin{frame}\n")
+        outFile.write(f"\\centering \\huge {title}\n")
+        outFile.write("\\end{frame}\n\n")
+        
     def write_frame(self,
                     title: str,
                     subtitle:str,
@@ -89,7 +99,7 @@ class beamer_writer:
         outFile.write("\\footnotesize\n")
         for el in collection:
             outFile.write(el.dump_latex().replace("_", "\_"))
-        outFile.write("\\end{frame}\n")
+        outFile.write("\\end{frame}\n\n")
 
     def write_end_document(self,
                            outFile) -> None:
