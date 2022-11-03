@@ -1,0 +1,22 @@
+name: Run Flake8 Against Repository
+
+on:
+  push:
+  
+jobs:
+  flake8-lint:
+  runs-on: macos-latest
+  steps:
+    - name: checkout repo content
+      uses: actions/checkout@v2
+    
+    - name: setup python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+    
+    - name: flake8 Lint
+      uses: py-actions/flake8@v2
+      with:
+        ignore: "E501,E302,W293,W291,E303,W605"
+  
