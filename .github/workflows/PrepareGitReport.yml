@@ -1,3 +1,5 @@
+name: Prepare Git Report for Acts-Athena integration
+
 on:
   workflow_dispatch:
     inputs:
@@ -24,8 +26,8 @@ on:
         required: true
 
 jobs:
-  propare_git_report:
-    runs-on: macos-latest
+  prepare_git_report:
+    runs-on: ubuntu-latest
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
@@ -40,7 +42,7 @@ jobs:
           make
       
       - name: set-environment-vars
-        uses: SpicyPizza/create-envfile@v1.31
+        uses: SpicyPizza/create-envfile@v1.3.1
         id: create-env
         with:
           file_name: .env
