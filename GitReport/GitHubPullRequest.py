@@ -24,6 +24,10 @@ class github_pull_request(git_merge_request):
                          merged_at = time_format(merge_request_info['merged_at']))
         
         self.__info: dict = merge_request_info
+
+    @property
+    def	info(self) -> dict:
+        return self.__info
         
     def __str__(self) -> str:
         message = f"Pull Request [id: {self.id}]\n"

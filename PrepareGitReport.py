@@ -75,14 +75,19 @@ def main():
                             date=date)
 
     for branch in branches:
-        print(f"Retrieving  MRs in this period with labels: ACTS and {branch} ...")
+        print(f"Retrieving  MRs in this period targeting {branch} branch and with label ACTS ...")
         list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
-                                                                labels=f'ACTS,{branch}',
-                                                                created_after=date_from,
+                                                                labels=f'ACTS',
+                                                                target_branch=branch,
+                                                                merged_after=date_from,
+                                                                merged_before=date_to,
                                                                 created_before=date_to,
                                                                 iterator=True)
+
         print(f"   * Found {len(list_merged_mrs_summary)} merged MRs")
-        
+        for el in list_merged_mrs_summary:
+            print(f"      - {el.title} [{el.id}]")
+            
         bwriter.add_data_group(title=f"Merged MRs with ACTS targeting {branch}",
                                subtitle=f"Period: {date_from} -- {date_to}",
                                collection=[el for el in list_merged_mrs_summary])
@@ -91,7 +96,9 @@ def main():
                                                         labels=f'ACTS,{branch}',
                                                         iterator=True)
         print(f"   * Found {len(list_merged_mrs_summary)} opened/draft MRs")
-                
+        for el in open_with_label:
+            print(f"      - {el.title} [{el.id}]")
+            
         bwriter.add_data_group(title=f"Open MRs with ACTS targeting {branch}",
                                subtitle=f"Period: {date_from} -- {date_to}",
                                collection=[el for el in open_with_label if not el.draft])
