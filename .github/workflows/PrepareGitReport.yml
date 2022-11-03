@@ -51,7 +51,7 @@ jobs:
       
       - name: execute py script
         run: |
-          make run --author ${{ github.event.inputs.author }} --date ${{ github.event.inputs.date }} --title ${{ github.event.inputs.title }} --output_file ${{ github.event.inputs.output_file }} --from_date ${{ github.event.inputs.from_date }} --to_date ${{ github.event.inputs.to_date }}
+          make run --author "${{ github.event.inputs.author }}" --date "${{ github.event.inputs.date }}" --title "${{ github.event.inputs.title }}" --output_file "${{ github.event.inputs.output_file }}" --from_date "${{ github.event.inputs.from_date }}" --to_date "${{ github.event.inputs.to_date }}" 
       
       - name: clear
         run: |
