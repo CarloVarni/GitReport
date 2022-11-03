@@ -1,3 +1,5 @@
+name: Prepare Git Report for Acts-Athena integration
+
 on:
   push:
   workflow_dispatch:
@@ -26,7 +28,7 @@ on:
 
 jobs:
   propare_git_report:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
