@@ -44,8 +44,8 @@ jobs:
         id: create-env
         with:
           file_name: .env
-          envkey_GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
-          envkey_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          envkey_GITLAB_TOKEN: ${{ secrets.API_GITLAB_TOKEN }}
+          envkey_GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
       
       - name: execute py script
         run: |
