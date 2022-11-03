@@ -80,7 +80,7 @@ class beamer_writer:
         
     def write_begin_document(self,
                              outFile) -> None:
-        outFile.write("\\begin{document}\n\n"),
+        outFile.write("\\begin{document}\n\n")
         outFile.write("\\frame{\\titlepage}\n\n")
 
     def write_title_page(self,
