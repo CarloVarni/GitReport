@@ -46,10 +46,12 @@ jobs:
           make
       
       - name: set-environment-vars
-        run: |
-          touch .env
-          echo GITLAB_TOKEN = "gigi" >> .env
-          echo GITHUB_TOKEN = "toto" >> .env
+        uses: SpicyPizza/create-envfile@v1
+        id: create-env
+        with:
+          file_name: .env
+          envkey_GITLAB_TOKEN: ${{ secrets.API_GITLAB_TOKEN }}
+          envkey_GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
       
       - name: execute py script
         run: |
