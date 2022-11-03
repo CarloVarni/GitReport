@@ -20,4 +20,3 @@ class git_user:
     @property
     def web_url(self) -> str:
         return self.__web_url
-

@@ -1,15 +1,8 @@
-from gitlab import Gitlab
-from github import Github
-
-from GitReport.GitHubPullRequest import github_pull_request
-from GitReport.GitLabMergeRequest import gitlab_merge_request
 from GitReport.BeamerWriter import beamer_writer
-
 from GitReport.GitHubManager import github_manager
 from GitReport.GitLabManager import gitlab_manager
 
 import argparse
-import re
 import os
 from dotenv import load_dotenv
 
@@ -77,7 +70,7 @@ def main():
     for branch in branches:
         print(f"Retrieving  MRs in this period targeting {branch} branch and with label ACTS ...")
         list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
-                                                                labels=f'ACTS',
+                                                                labels='ACTS',
                                                                 target_branch=branch,
                                                                 merged_after=date_from,
                                                                 merged_before=date_to,
@@ -115,10 +108,10 @@ def main():
     if acts_tag_is_changed:
         # Github
         gh_manager = github_manager(github_token=github_token,
-                                    repository="acts-project/acts")
+                                    repository=github_repository_name)
 
         list_relevant_tags = gh_manager.get_relevant_releases(from_release=acts_tag_changes[0],
-                                                              to_release=acts_tag_changes[len(acts_tag_changes)-1])
+                                                              to_release=acts_tag_changes[len(acts_tag_changes) - 1])
 
         print(f"List of relevant Acts tags interested: {[tag_name for (tag_name, release) in list_relevant_tags]}")
 
@@ -138,4 +131,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

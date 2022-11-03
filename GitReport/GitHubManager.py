@@ -57,5 +57,3 @@ class github_manager:
             output.append(merge_request)
         
         return output
-        
-    
