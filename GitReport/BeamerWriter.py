@@ -92,7 +92,7 @@ class beamer_writer:
         
     def write_frame(self,
                     title: str,
-                    subtitle:str,
+                    subtitle: str,
                     collection: tuple,
                     outFile) -> None:
         outFile.write(f"\\begin{{frame}}{{{title}}}{{{subtitle}}}\n")
@@ -104,4 +104,3 @@ class beamer_writer:
     def write_end_document(self,
                            outFile) -> None:
         outFile.write("\\end{document}")
-

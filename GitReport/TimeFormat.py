@@ -23,4 +23,3 @@ class time_format:
     @property
     def hours(self) -> str:
         return self.__hours
-

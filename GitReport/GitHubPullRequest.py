@@ -11,22 +11,22 @@ class github_pull_request(git_merge_request):
         assert id == int(merge_request_info['number'])
 
         super().__init__(id=id,
-                         web_url = merge_request_info['html_url'],
-                         state = merge_request_info['state'],
-                         draft = merge_request_info['draft'],
-                         title = merge_request_info['title'],
-                         description = merge_request_info['body'],
-                         author = git_user(merge_request_info['user']['login'],
-                                           merge_request_info['user']['html_url']),
-                         merged_by = git_user(merge_request_info['merged_by']['login'] ,
-                                              merge_request_info['merged_by']['html_url']),
-                         created_at = time_format(merge_request_info['created_at']),
-                         merged_at = time_format(merge_request_info['merged_at']))
+                         web_url=merge_request_info['html_url'],
+                         state=merge_request_info['state'],
+                         draft=merge_request_info['draft'],
+                         title=merge_request_info['title'],
+                         description=merge_request_info['body'],
+                         author=git_user(merge_request_info['user']['login'],
+                                         merge_request_info['user']['html_url']),
+                         merged_by=git_user(merge_request_info['merged_by']['login'],
+                                            merge_request_info['merged_by']['html_url']),
+                         created_at=time_format(merge_request_info['created_at']),
+                         merged_at=time_format(merge_request_info['merged_at']))
         
         self.__info: dict = merge_request_info
-
+        
     @property
-    def	info(self) -> dict:
+    def info(self) -> dict:
         return self.__info
         
     def __str__(self) -> str:

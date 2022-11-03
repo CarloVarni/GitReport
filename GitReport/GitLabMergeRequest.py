@@ -14,17 +14,17 @@ class gitlab_merge_request(git_merge_request):
         assert merge_request_diff is None or isinstance(merge_request_diff, dict)
 
         super().__init__(id=id,
-                         web_url = merge_request_info['web_url'],
-                         state = merge_request_info['state'],
-                         draft = merge_request_info['draft'],
-                         title = merge_request_info['title'],
-                         description = merge_request_info['description'],
-                         author = git_user(merge_request_info['author']['username'],
-                                           merge_request_info['author']['web_url']),
-                         merged_by = None if merge_request_info['state'] == "opened" else git_user(merge_request_info['merged_by']['username'] ,
-                                                                                                   merge_request_info['merged_by']['web_url']),
-                         created_at = time_format(merge_request_info['created_at']),
-                         merged_at = None if merge_request_info['state'] == "opened" else time_format(merge_request_info['merged_at']))
+                         web_url=merge_request_info['web_url'],
+                         state=merge_request_info['state'],
+                         draft=merge_request_info['draft'],
+                         title=merge_request_info['title'],
+                         description=merge_request_info['description'],
+                         author=git_user(merge_request_info['author']['username'],
+                                         merge_request_info['author']['web_url']),
+                         merged_by=None if merge_request_info['state'] == "opened" else git_user(merge_request_info['merged_by']['username'],
+                                                                                                 merge_request_info['merged_by']['web_url']),
+                         created_at=time_format(merge_request_info['created_at']),
+                         merged_at=None if merge_request_info['state'] == "opened" else time_format(merge_request_info['merged_at']))
         
         self.__info: dict = merge_request_info
         self.__acts_tag_change: tuple = self.check_changes(merge_request_diff)

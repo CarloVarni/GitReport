@@ -83,4 +83,3 @@ class git_merge_request:
     
     def dump_latex(self) -> str:
         pass    
-
