@@ -1,0 +1,59 @@
+on:
+  workflow_dispatch:
+    inputs:
+      author:
+        description: 'Author of the Git Report document'
+        required: false
+        default: 'Carlo Varni'
+      date:
+        description: 'Date of the report'
+        required: true
+      title:
+        description: 'Title of the presentation'
+        required: false
+        default: 'Acts-Athena integration, MRs report'
+      output_file:
+        description: 'Name of the output latex file'
+        required: false
+        default: 'Report-Acts-Athena.tex'
+      from_date:
+        description: 'Get gitlab merge requests from given date'
+        required: true
+      to_date:
+        description: 'Get gitlab merge requests up to given date'
+        required: true
+
+jobs:
+  propare_git_report:
+    runs-on: macos-latest
+    steps:
+      - name: checkout repo content
+        uses: actions/checkout@v2
+      
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      
+      - name: install required packages
+        run: |
+          make
+      
+      - name: set-environment-vars
+        uses: SpicyPizza/create-envfile@v1.31
+        id: create-env
+        with:
+          file_name: .env
+          envkey_GITLAB_TOKEN: ${{ secrets.GITLAB_TOKEN }}
+          envkey_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: execute py script
+        run: |
+          make run --author ${{ github.event.inputs.author }} --date ${{ github.event.inputs.date }} --title ${{ github.event.inputs.title }} --output_file ${{ github.event.inputs.output_file }} --from_date ${{ github.event.inputs.from_date }} --to_date ${{ github.event.inputs.to_date }}
+      
+      - name: clear
+        run: |
+          make clean
+
+
+          
