@@ -30,6 +30,10 @@ class gitlab_merge_request(git_merge_request):
         self.__acts_tag_change: tuple = self.check_changes(merge_request_diff)
 
     @property
+    def info(self) -> dict:
+        return self.__info
+        
+    @property
     def acts_tag_change(self) -> tuple:
         return self.__acts_tag_change
     

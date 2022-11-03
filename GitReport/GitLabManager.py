@@ -1,6 +1,7 @@
 from gitlab import Gitlab
 from GitReport.GitLabMergeRequest import gitlab_merge_request
-    
+from datetime import datetime
+
 class gitlab_manager:
     def __init__(self,
                  gitlab_token: str,
@@ -32,12 +33,25 @@ class gitlab_manager:
         return self.__acts_tag_changes
     
     def get_merge_requests(self,
+                           merged_after: str = "",
+                           merged_before: str = "",
                            **kwargs) -> tuple:
         list_of_requests = self.__project.mergerequests.list(**kwargs)
 
         output = []
         for mr in list_of_requests:
             id = mr.attributes['iid']
+
+            merged_at = mr.attributes['merged_at']
+            if len(merged_after) != 0 and len(merged_before) != 0 and merged_at is not None:
+                merged_at_datetime = datetime.fromisoformat(merged_at)
+                merged_after_datetime = datetime.fromisoformat(merged_after)
+                merged_before_datetime = datetime.fromisoformat(merged_before)
+                if merged_after_datetime > merged_at_datetime:
+                    continue
+                if merged_before_datetime < merged_at_datetime:
+                    continue
+                
             merge_request = gitlab_merge_request(id,
                                                  mr.attributes,
                                                  mr.changes())
