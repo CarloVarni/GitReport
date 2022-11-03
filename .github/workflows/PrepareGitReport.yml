@@ -31,7 +31,11 @@ on:
 
 jobs:
   prepare_git_report:
+    name: Prepare Git Report
     runs-on: ubuntu-latest
+    env:
+      GITLAB_TOKEN: ${{ secrets.API_GITLAB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
     steps:
       - name: checkout repo content
         uses: actions/checkout@v2
@@ -44,14 +48,6 @@ jobs:
       - name: install required packages
         run: |
           make
-      
-      - name: set-environment-vars
-        uses: SpicyPizza/create-envfile@v1
-        id: create-env
-        with:
-          file_name: .env
-          envkey_GITLAB_TOKEN: ${{ secrets.API_GITLAB_TOKEN }}
-          envkey_GITHUB_TOKEN: ${{ secrets.API_GITHUB_TOKEN }}
       
       - name: execute py script
         run: |
