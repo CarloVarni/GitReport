@@ -27,7 +27,9 @@ def parse_arguments():
     parser.add_argument('--to_date', required=True, type=str, nargs=1,
                         help='Get gitlab merge requests up to given date')
     parser.add_argument('--branch', required=False, type=str, nargs=1, default='master',
-                        help='List of branches')
+                        help='List of branches, comma separated')
+    parser.add_argument('--labels', required=False, type=str, nargs=1, default='ACTS',
+                        help='List of labels, comma separated')
     
     args = parser.parse_args()
     return args
@@ -45,6 +47,7 @@ def main():
     date_from = args.from_date if type(args.from_date) == str else args.from_date[0]
     date_to = args.to_date if type(args.to_date) == str else args.to_date[0]
     branches = args.branch.split(',') if type(args.branch) == str else args.branch[0].split(',')
+    labels = args.labels if type(args.labels) == str else args.labels[0]
 
     gitlab_token = ""
     github_token = ""
@@ -68,9 +71,9 @@ def main():
                             date=date)
 
     for branch in branches:
-        print(f"Retrieving  MRs in this period targeting {branch} branch and with label ACTS ...")
+        print(f"Retrieving  MRs in this period targeting {branch} branch and with labels '{labels}' ...")
         list_merged_mrs_summary = gl_manager.get_merge_requests(state='merged',
-                                                                labels='ACTS',
+                                                                labels=f'{labels}',
                                                                 target_branch=branch,
                                                                 merged_after=date_from,
                                                                 merged_before=date_to,
@@ -81,22 +84,23 @@ def main():
         for el in list_merged_mrs_summary:
             print(f"      - {el.title} [{el.id}]")
             
-        bwriter.add_data_group(title=f"Merged MRs with ACTS targeting {branch}",
+        bwriter.add_data_group(title=f"Merged MRs with '{labels}' targeting {branch}",
                                subtitle=f"Period: {date_from} -- {date_to}",
                                collection=[el for el in list_merged_mrs_summary])
 
         open_with_label = gl_manager.get_merge_requests(state='opened',
-                                                        labels=f'ACTS,{branch}',
+                                                        labels=f'{labels}`,
+                                                        target_branch=branch,
                                                         iterator=True)
         print(f"   * Found {len(list_merged_mrs_summary)} opened/draft MRs")
         for el in open_with_label:
             print(f"      - {el.title} [{el.id}]")
             
-        bwriter.add_data_group(title=f"Open MRs with ACTS targeting {branch}",
+        bwriter.add_data_group(title=f"Open MRs with '{labels}' targeting {branch}",
                                subtitle=f"Period: {date_from} -- {date_to}",
                                collection=[el for el in open_with_label if not el.draft])
 
-        bwriter.add_data_group(title=f"Draft MRs with ACTS targeting {branch}",
+        bwriter.add_data_group(title=f"Draft MRs with '{labels}' targeting {branch}",
                                subtitle=f"Period: {date_from} -- {date_to}",
                                collection=[el for el in open_with_label if el.draft])
 
