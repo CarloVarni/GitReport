@@ -89,7 +89,7 @@ def main():
                                collection=[el for el in list_merged_mrs_summary])
 
         open_with_label = gl_manager.get_merge_requests(state='opened',
-                                                        labels=f'{labels}`,
+                                                        labels=f'{labels}',
                                                         target_branch=branch,
                                                         iterator=True)
         print(f"   * Found {len(list_merged_mrs_summary)} opened/draft MRs")
