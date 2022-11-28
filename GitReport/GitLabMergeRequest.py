@@ -79,5 +79,11 @@ class gitlab_merge_request(git_merge_request):
             match_addition = re.findall('\+ +\-DATLAS_ACTS_TAG="(.*)"', diff)
             if len(match_removal) != 0 and len(match_addition) != 0:
                 output = [match_removal[0], match_addition[0]]
+                continue
 
+            match_removal = re.findall('\- +\-DATLAS_ACTS_SOURCE="URL;https://github.com/acts-project/acts/archive/refs/tags/(v.*).tar.gz', diff)
+            match_addition = re.findall('\+ +\-DATLAS_ACTS_SOURCE="URL;https://github.com/acts-project/acts/archive/refs/tags/(v.*).tar.gz', diff)
+            if len(match_removal) != 0 and len(match_addition) != 0:
+                output = [match_removal[0], match_addition[0]]
+            
         return output
