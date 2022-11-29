@@ -26,7 +26,7 @@ class git_merge_request:
         self.__id: int = id
         self.__web_url: str = web_url
         self.__state: str = state
-        self.__title: str = title
+        self.__title: str = title.encode("ascii", "ignore").decode()
         self.__description: str = description
         self.__author: git_user = author
         self.__merged_by: git_user = merged_by
