@@ -58,11 +58,6 @@ jobs:
         run: |
           make run PARAMS="--author '${{ github.event.inputs.author }}' --date '${{ github.event.inputs.date }}' --title '${{ github.event.inputs.title }}' --output_file '${{ github.event.inputs.output_file }}' --from_date '${{ github.event.inputs.from_date }}' --to_date '${{ github.event.inputs.to_date }}' --branch '${{ github.event.inputs.branch }}' --labels ${{ github.event.inputs.labels }}" 
       
-      - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v2
-        with:
-          root_file: ${{ github.event.inputs.output_file }}
-      
       - name: clear
         run: |
           make clean
@@ -70,7 +65,30 @@ jobs:
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: git-report
+          name: git-latex-report
           path: |
-            *.pdf 
             *.tex
+
+  prepare-pdf-report:
+    name: Prepare PDF Report
+    runs-on: ubuntu-latest
+    needs: prepare_git_report
+
+    steps:
+      - name: Download artifacts from latex creation
+        uses: actions/download-artifact@v3
+        with:
+          name: git-latex-report
+
+      - name: Compile LaTeX document
+        uses: xu-cheng/latex-action@v2
+        with:
+          root_file: ${{ github.event.inputs.output_file }}
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: git-pdf-report
+          path: |
+            *.pdf
+
