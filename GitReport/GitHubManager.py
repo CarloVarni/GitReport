@@ -1,5 +1,6 @@
 from github import Github
 from GitReport.GitHubPullRequest import github_pull_request
+from datetime import datetime
 import re
 
 class github_manager:
@@ -44,15 +45,36 @@ class github_manager:
         output = []
 
         body = release_body.split('\n')
-        ids = []
+        info = []
         for el in body:
-            match = re.findall("\(#(\\d+)\)", el)
+            print(el)
+            match_string = "([^\(\)]+)(?:\(#(.*)\))?\s\(([^#@]+)\)\s\(@(.*)\)"
+            match = re.findall(match_string, el)
+            print(match)
             if len(match) != 1:
                 continue
-            ids.append(int(match[0]))
+            if len(match[0]) != 4:
+                continue
+            toAdd = [match[0][0], match[0][1], match[0][2], match[0][3]]
+            if len(toAdd[1]) == 0:
+                toAdd[1] = '0' 
+            toAdd[1] = int(toAdd[1])
+            info.append(toAdd)
 
-        for id in ids:
-            pr = self.__project.get_pull(id).raw_data
+        for [title, id, sha, user] in info:
+            print(f'--- {title}')
+            pr = self.__project.get_pull(id).raw_data if id != 0 else { 'number' : id,
+                                                                        'html_url' : 'unknown',
+                                                                        'state' : 'merged',
+                                                                        'draft' : False,
+                                                                        'title' : title,
+                                                                        'body' : 'Not Found',
+                                                                        'user' : {'login' : user,
+                                                                                  'html_url' : f'https://github.com/{user}'},
+                                                                        'merged_by' : {'login' : 'Not Known',
+                                                                                       'html_url' : 'https://github.com/Not Known'},
+                                                                        'created_at' : datetime.now().isoformat(),
+                                                                        'merged_at' : datetime.now().isoformat() }
             merge_request = github_pull_request(id, pr)
             output.append(merge_request)
         
