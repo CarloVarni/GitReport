@@ -92,7 +92,7 @@ def main():
                                                         labels=f'{labels}',
                                                         target_branch=branch,
                                                         iterator=True)
-        print(f"   * Found {len(list_merged_mrs_summary)} opened/draft MRs")
+        print(f"   * Found {len(open_with_label)} opened/draft MRs")
         for el in open_with_label:
             print(f"      - {el.title} [{el.id}]")
             
