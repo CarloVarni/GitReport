@@ -48,9 +48,9 @@ class github_manager:
         info = []
         for el in body:
             print(el)
-            match_string = "([^\(\)]+)(?:\(#(.*)\))?\s\(([^#@]+)\)\s\(@(.*)\)"
+            match_string = "(.*?)(?:\(#(.*)\))?\s\(([^#@]+)\)\s\(@(.*)\)"
             match = re.findall(match_string, el)
-            print(match)
+
             if len(match) != 1:
                 continue
             if len(match[0]) != 4:
@@ -62,7 +62,6 @@ class github_manager:
             info.append(toAdd)
 
         for [title, id, sha, user] in info:
-            print(f'--- {title}')
             pr = self.__project.get_pull(id).raw_data if id != 0 else { 'number' : id,
                                                                         'html_url' : 'unknown',
                                                                         'state' : 'merged',
