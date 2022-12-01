@@ -62,18 +62,18 @@ class github_manager:
             info.append(toAdd)
 
         for [title, id, sha, user] in info:
-            pr = self.__project.get_pull(id).raw_data if id != 0 else { 'number': id,
-                                                                        'html_url': 'unknown',
-                                                                        'state': 'merged',
-                                                                        'draft': False,
-                                                                        'title': title,
-                                                                        'body': 'Not Found',
-                                                                        'user': {'login': user,
-                                                                                 'html_url': f'https://github.com/{user}'},
-                                                                        'merged_by': {'login': 'Not Known',
-                                                                                      'html_url': 'https://github.com/Not Known'},
-                                                                        'created_at': datetime.now().isoformat(),
-                                                                        'merged_at': datetime.now().isoformat() }
+            pr = self.__project.get_pull(id).raw_data if id != 0 else {'number': id,
+                                                                       'html_url': 'unknown',
+                                                                       'state': 'merged',
+                                                                       'draft': False,
+                                                                       'title': title,
+                                                                       'body': 'Not Found',
+                                                                       'user': {'login': user,
+                                                                                'html_url': f'https://github.com/{user}'},
+                                                                       'merged_by': {'login': 'Not Known',
+                                                                                     'html_url': 'https://github.com/Not Known'},
+                                                                       'created_at': datetime.now().isoformat(),
+                                                                       'merged_at': datetime.now().isoformat()}
             merge_request = github_pull_request(id, pr)
             output.append(merge_request)
         
