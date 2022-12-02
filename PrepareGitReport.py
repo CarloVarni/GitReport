@@ -127,7 +127,8 @@ def main():
             bwriter.add_data_group(title=f"Acts Tag {tag_name} in Athena",
                                    subtitle=f"PRs introduced with Tag {tag_name}",
                                    collection=list_prs,
-                                   section_page=True)
+                                   section_page=True,
+                                   n=6)
 
     bwriter.write()
     
