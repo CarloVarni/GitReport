@@ -60,7 +60,7 @@ class github_manager:
                 toAdd[1] = '0' 
             toAdd[1] = int(toAdd[1])
             info.append(toAdd)
-
+            
         for [title, id, sha, user] in info:
             pr = self.__project.get_pull(id).raw_data if id != 0 else {'number': id,
                                                                        'html_url': 'unknown',
@@ -74,7 +74,7 @@ class github_manager:
                                                                                      'html_url': 'https://github.com/Not Known'},
                                                                        'created_at': datetime.now().isoformat(),
                                                                        'merged_at': datetime.now().isoformat()}
-            merge_request = github_pull_request(id, pr)
+            merge_request = github_pull_request(id, pr, sha)
             output.append(merge_request)
         
         return output
