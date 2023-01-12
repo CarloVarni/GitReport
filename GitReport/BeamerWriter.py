@@ -34,17 +34,18 @@ class beamer_writer:
                        subtitle: str,
                        collection: tuple,
                        n: int = 7,
-                       section_page: bool = False):
-        self.__data_group.append([title, subtitle, collection, n, section_page])
+                       section_page: bool = False,
+                       comment: str = ""):
+        self.__data_group.append([title, subtitle, collection, n, section_page, comment])
 
     def write(self) -> None:
         with open(self.file_name, "w") as outFile:
             self.write_metadata(outFile)
             self.write_begin_document(outFile)
 
-            for (title, subtitle, collection, n, section_page) in self.__data_group:
+            for (title, subtitle, collection, n, section_page, comment) in self.__data_group:
                 if section_page:
-                    self.write_title_page(title, outFile)
+                    self.write_title_page(title, comment, outFile)
                 self.write_collection(title, subtitle, collection, n, outFile)
             
             self.write_end_document(outFile)
@@ -85,9 +86,11 @@ class beamer_writer:
 
     def write_title_page(self,
                          title: str,
+                         comment: str,
                          outFile) -> None:
         outFile.write("\\begin{frame}\n")
-        outFile.write(f"\\centering \\huge {title}\n")
+        outFile.write(f"\\centering \\huge {title}\n\n")
+        outFile.write(f"\\footnotesize {comment}\n")
         outFile.write("\\end{frame}\n\n")
         
     def write_frame(self,
