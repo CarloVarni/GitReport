@@ -60,8 +60,12 @@ class github_manager:
                 toAdd[1] = '0' 
             toAdd[1] = int(toAdd[1])
             info.append(toAdd)
-            
+
+        recorded = set()
         for [title, id, sha, user] in info:
+            if sha in recorded:
+                continue
+            recorded.add(sha)
             pr = self.__project.get_pull(id).raw_data if id != 0 else {'number': id,
                                                                        'html_url': 'unknown',
                                                                        'state': 'merged',
