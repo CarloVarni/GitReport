@@ -124,11 +124,13 @@ def main():
             list_prs = gh_manager.get_list_prs_for_release(tag_name=tag_name,
                                                            release_body=release)
 
+            comment_to_add = "All details in \\href{{{https://github.com/acts-project/acts/releases/tag/" + tag_name + "}}"
+            comment_to_add += "{{{https://github.com/acts-project/acts/releases/tag/" + tag_name + "}}}"
             bwriter.add_data_group(title=f"Acts Tag {tag_name} in Athena",
                                    subtitle=f"PRs introduced with Tag {tag_name}",
                                    collection=list_prs,
                                    section_page=True,
-                                   comment=f"All details in \\href{{{https://github.com/acts-project/acts/releases/tag/{tag_name}}}}{{{https://github.com/acts-project/acts/releases/tag/{tag_name}}}}",
+                                   comment=comment_to_add,
                                    n=6)
     bwriter.write()
     
