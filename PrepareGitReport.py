@@ -128,7 +128,7 @@ def main():
                                    subtitle=f"PRs introduced with Tag {tag_name}",
                                    collection=list_prs,
                                    section_page=True,
-                                   comment="All details in \\href{{{https://github.com/acts-project/acts/releases/tag/v22.0.0}}}{{{https://github.com/acts-project/acts/releases/tag/v22.0.0}}}",
+                                   comment=f"All details in \\href{{{https://github.com/acts-project/acts/releases/tag/{tag_name}}}}{{{https://github.com/acts-project/acts/releases/tag/{tag_name}}}}",
                                    n=6)
     bwriter.write()
     
