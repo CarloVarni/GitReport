@@ -48,7 +48,7 @@ class github_manager:
         info = []
         for el in body:
             print(el)
-            match_string = "(.*?)(?:\(#([\s]+)\))?\s\(([^#@]+)\)\s\(@([\s]+)\)"
+            match_string = "(.*?)(?:\(#([^\s]+)\))?\s\(([^#@]+)\)\s\(@([^\s]+)\)"
             match = re.findall(match_string, el)
 
             if len(match) != 1:
