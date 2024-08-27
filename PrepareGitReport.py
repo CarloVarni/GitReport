@@ -37,17 +37,17 @@ def parse_arguments():
 def main():
     args = parse_arguments()
     
-    gitlab_repository_name = args.gitlab_repository if type(args.gitlab_repository) == str else args.gitlab_repository[0]
+    gitlab_repository_name = args.gitlab_repository if type(args.gitlab_repository) is str else args.gitlab_repository[0]
     gitlab_project_id = args.gitlab_project_id
-    github_repository_name = args.github_repository if type(args.github_repository) == str else args.github_repository[0]
-    output_file = args.output_file if type(args.output_file) == str else args.output_file[0]
-    author = args.author if type(args.author) == str else args.author[0]
-    title = args.title if type(args.title) == str else args.title[0]
-    date = args.date if type(args.date) == str else args.date[0]
-    date_from = args.from_date if type(args.from_date) == str else args.from_date[0]
-    date_to = args.to_date if type(args.to_date) == str else args.to_date[0]
-    branches = args.branch.split(',') if type(args.branch) == str else args.branch[0].split(',')
-    labels = args.labels if type(args.labels) == str else args.labels[0]
+    github_repository_name = args.github_repository if type(args.github_repository) is str else args.github_repository[0]
+    output_file = args.output_file if type(args.output_file) is str else args.output_file[0]
+    author = args.author if type(args.author) is str else args.author[0]
+    title = args.title if type(args.title) is str else args.title[0]
+    date = args.date if type(args.date) is str else args.date[0]
+    date_from = args.from_date if type(args.from_date) is str else args.from_date[0]
+    date_to = args.to_date if type(args.to_date) is str else args.to_date[0]
+    branches = args.branch.split(',') if type(args.branch) is str else args.branch[0].split(',')
+    labels = args.labels if type(args.labels) is str else args.labels[0]
 
     gitlab_token = ""
     github_token = ""
