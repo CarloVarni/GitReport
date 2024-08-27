@@ -48,24 +48,24 @@ class github_manager:
         info = []
         for el in body:
             print(el)
-            match_string = "(.*?)(?:\(#([^\s]+)\))?\s\(([^#@]+)\)\s\(@([^\s]+)\)"
+            match_string = r"-\s(.*)\s\(#([0-9]+)\)\sby\s@([^\s]+)"
             match = re.findall(match_string, el)
 
             if len(match) != 1:
                 continue
-            if len(match[0]) != 4:
+            if len(match[0]) != 3:
                 continue
-            toAdd = [match[0][0], match[0][1], match[0][2], match[0][3]]
+            toAdd = [match[0][0], match[0][1], match[0][2]]
             if len(toAdd[1]) == 0:
                 toAdd[1] = '0' 
             toAdd[1] = int(toAdd[1])
             info.append(toAdd)
 
         recorded = set()
-        for [title, id, sha, user] in info:
-            if sha in recorded:
+        for [title, id, user] in info:
+            if id in recorded:
                 continue
-            recorded.add(sha)
+            recorded.add(id)
             pr = self.__project.get_pull(id).raw_data if id != 0 else {'number': id,
                                                                        'html_url': 'unknown',
                                                                        'state': 'merged',
@@ -78,7 +78,7 @@ class github_manager:
                                                                                      'html_url': 'https://github.com/Not Known'},
                                                                        'created_at': datetime.now().isoformat(),
                                                                        'merged_at': datetime.now().isoformat()}
-            merge_request = github_pull_request(id, pr, sha)
+            merge_request = github_pull_request(id, pr, "")
             output.append(merge_request)
         
         return output
