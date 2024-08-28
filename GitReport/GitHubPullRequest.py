@@ -53,7 +53,8 @@ class github_pull_request(git_merge_request):
         message = f"\\textbf{{{self.title}}}"
         if self.id != 0:
             message += f" [\\href{{{self.web_url}}}{{PR \#{self.id}}}]" 
-        message += f" (\\href{{{self.commit_url}}}{{{self.commit}}})\n\n"
+#        message += f" (\\href{{{self.commit_url}}}{{{self.commit}}})\n\n"
+        message += "\n\n"
         message += "{\scriptsize\n"
         message += f"created by \\href{{{self.author.web_url}}}{{@{self.author.username}}} [{self.created_at}]\n\n"
         if self.id != 0:
