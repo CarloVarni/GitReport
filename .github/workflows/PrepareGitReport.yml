@@ -81,7 +81,7 @@ jobs:
           name: git-latex-report
 
       - name: Compile LaTeX document
-        uses: xu-cheng/latex-action@v2
+        uses: xu-cheng/latex-action@v3
         with:
           root_file: ${{ github.event.inputs.output_file }}
       
