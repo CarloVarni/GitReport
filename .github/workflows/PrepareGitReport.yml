@@ -43,10 +43,10 @@ jobs:
 
     steps:
       - name: checkout repo content
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: 3.11
       
@@ -63,7 +63,7 @@ jobs:
           make clean
           
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: git-latex-report
           path: |
@@ -76,7 +76,7 @@ jobs:
 
     steps:
       - name: Download artifacts from latex creation
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: git-latex-report
 
@@ -86,7 +86,7 @@ jobs:
           root_file: ${{ github.event.inputs.output_file }}
       
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: git-pdf-report
           path: |
